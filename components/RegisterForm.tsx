@@ -9,19 +9,60 @@ export default function RegisterForm() {
     agentCode: '',
     role: 'field',
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (form.email && form.password && form.agentCode) {
-      alert('Agent registered. Redirecting to Mission Control...');
-      window.location.href = '/dashboard';
-    } else {
-      alert('Complete all fields to register.');
+    setLoading(true);
+    setError('');
+
+    if (!form.email || !form.password || !form.agentCode) {
+      setError('Please complete all fields to register.');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password,
+          agentCode: form.agentCode,
+          role: form.role,
+          type: 'register',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(
+          'Agent registered successfully! Redirecting to Mission Control...'
+        );
+        window.location.href = '/dashboard';
+      } else {
+        setError(data.message || 'Registration failed. Please try again.');
+      }
+    } catch (err) {
+      setError('Network error. Please check your connection and try again.');
+      console.error('Registration error:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className='space-y-4 text-white'>
+      {error && (
+        <div className='bg-red-500/20 border border-red-500 text-red-300 px-3 py-2 rounded text-sm'>
+          {error}
+        </div>
+      )}
       <input
         type='email'
         placeholder='Email'
@@ -29,6 +70,7 @@ export default function RegisterForm() {
         onChange={(e) => setForm({ ...form, email: e.target.value })}
         className='w-full bg-transparent px-3 py-2 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-green-500'
         required
+        disabled={loading}
       />
       <input
         type='password'
@@ -37,6 +79,7 @@ export default function RegisterForm() {
         onChange={(e) => setForm({ ...form, password: e.target.value })}
         className='w-full bg-transparent px-3 py-2 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-green-500'
         required
+        disabled={loading}
       />
       <input
         type='text'
@@ -45,6 +88,7 @@ export default function RegisterForm() {
         onChange={(e) => setForm({ ...form, agentCode: e.target.value })}
         className='w-full bg-transparent px-3 py-2 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-green-500'
         required
+        disabled={loading}
       />
 
       <div className='text-sm text-gray-300'>
@@ -56,6 +100,7 @@ export default function RegisterForm() {
             checked={form.role === 'field'}
             onChange={(e) => setForm({ ...form, role: e.target.value })}
             className='form-radio text-green-600'
+            disabled={loading}
           />
           <span className='ml-2'>Field Agent</span>
         </label>
@@ -66,6 +111,7 @@ export default function RegisterForm() {
             checked={form.role === 'handler'}
             onChange={(e) => setForm({ ...form, role: e.target.value })}
             className='form-radio text-green-600'
+            disabled={loading}
           />
           <span className='ml-2'>Handler</span>
         </label>
@@ -73,9 +119,10 @@ export default function RegisterForm() {
 
       <button
         type='submit'
-        className='w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors'
+        className='w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+        disabled={loading}
       >
-        Register Agent
+        {loading ? 'Registering Agent...' : 'Register Agent'}
       </button>
     </form>
   );

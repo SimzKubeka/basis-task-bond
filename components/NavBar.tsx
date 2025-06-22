@@ -22,8 +22,13 @@ export default function Navbar({
       </div>
       <button
         onClick={() => {
-          alert('Logging out... (not wired yet)');
-          window.location.href = '/';
+          fetch('/api/auth')
+            .then(() => {
+              window.location.href = '/';
+            })
+            .catch((err) => {
+              console.error('Logout error:', err);
+            });
         }}
         className='text-sm text-red-500 hover:underline'
       >
