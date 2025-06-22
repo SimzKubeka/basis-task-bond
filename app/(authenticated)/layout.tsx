@@ -1,3 +1,24 @@
+/**
+ * =============================================
+ * File: layout.tsx (Authenticated Layout)
+ * Purpose:
+ * This file defines the layout component for all authenticated routes,
+ * providing a consistent navigation structure with sidebar and navbar.
+ *
+ * Features:
+ * - Wraps authenticated pages with navigation components
+ * - Manages sidebar open/close state for mobile responsiveness
+ * - Integrates NavBar and Sidebar components for navigation
+ * - Uses consistent dark theme styling throughout
+ * - Responsive design that adapts to different screen sizes
+ *
+ * Notes:
+ * - This layout is applied to all routes within the (authenticated) folder
+ * - Uses 'use client' directive for interactive sidebar functionality
+ * - Provides a consistent user experience across authenticated pages
+ * =============================================
+ */
+
 'use client';
 
 import { useState } from 'react';

@@ -1,3 +1,22 @@
+/**
+ * =============================================
+ * File: page.tsx (Home/Login/Register Entry Page)
+ * Purpose:
+ * This is the main entry page for the James Bond-themed web app.
+ * It conditionally renders either the login form or registration form
+ * based on the selected mode using internal state.
+ *
+ * Features:
+ * - `mode` state toggles between 'login' and 'register' views
+ * - Displays a styled container with theming appropriate to a dark agent interface
+ * - Includes toggling logic between the forms via a button
+ * - Uses the custom `LoginForm` and `RegisterForm` components for authentication
+ *
+ * Notes:
+ * - Forms are separated into reusable components for maintainability
+ * =============================================
+ */
+
 'use client';
 
 import { useState } from 'react';

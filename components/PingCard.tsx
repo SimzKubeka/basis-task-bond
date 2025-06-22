@@ -35,7 +35,7 @@ export default function PingCard({ ping }: { ping: Ping }) {
 
       {/* Modal */}
       {open && (
-        <div className='fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50'>
+        <div className='fixed inset-0 bg-gray-900/75 backdrop-blur-sm flex items-center justify-center z-50'>
           <div className='bg-[#111] border border-green-500 text-white p-6 rounded-lg w-[90%] max-w-md shadow-xl relative'>
             <h2 className='text-lg font-semibold mb-4 text-green-400'>
               📡 Mission Ping Message

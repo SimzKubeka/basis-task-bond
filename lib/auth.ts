@@ -4,7 +4,7 @@ import { NextRequest } from 'next/server';
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 export function signJWT(payload: { id: string; email: string }) {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: '7d' });
 }
 
 export function verifyJWT(req: NextRequest) {
