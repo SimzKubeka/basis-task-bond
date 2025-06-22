@@ -25,6 +25,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 export default function SendPingPage() {
   const [lat, setLat] = useState('');
@@ -46,6 +47,7 @@ export default function SendPingPage() {
         }
       } catch (error) {
         console.error('Error fetching recent ping:', error);
+        toast.error('Failed to load recent ping data');
       }
     };
 
@@ -57,11 +59,18 @@ export default function SendPingPage() {
     const randomLng = (Math.random() * 360 - 180).toFixed(6);
     setLat(randomLat);
     setLng(randomLng);
+    toast.success('Coordinates generated successfully!');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (lat && lng && message) {
+
+    if (!lat || !lng || !message) {
+      toast.error('Please fill in all fields before sending ping');
+      return;
+    }
+
+    try {
       const res = await fetch('/api/pings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -69,12 +78,28 @@ export default function SendPingPage() {
       });
 
       if (res.ok) {
+        toast.success(
+          'Ping transmitted successfully! Mission Control has been notified.'
+        );
         setSuccess(true);
         setLat('');
         setLng('');
         setMessage('');
         setParentId(null);
+
+        // Reset success state after a delay
+        setTimeout(() => {
+          setSuccess(false);
+        }, 3000);
+      } else {
+        const errorData = await res.json();
+        toast.error(
+          errorData.message || 'Failed to send ping. Please try again.'
+        );
       }
+    } catch (error) {
+      console.error('Error sending ping:', error);
+      toast.error('Network error. Please check your connection and try again.');
     }
   };
 

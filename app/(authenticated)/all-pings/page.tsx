@@ -22,6 +22,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import PingTable from '../../../components/PingTable';
 
 interface Ping {
@@ -35,17 +36,47 @@ interface Ping {
 
 export default function AllPingsPage() {
   const [pings, setPings] = useState<Ping[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadPings = async () => {
-      const res = await fetch('/api/pings');
-      if (res.ok) {
-        const data = await res.json();
-        setPings(data.pings);
+      try {
+        setLoading(true);
+        const res = await fetch('/api/pings');
+        if (res.ok) {
+          const data = await res.json();
+          setPings(data.pings);
+          if (data.pings.length === 0) {
+            toast('No pings found. Send your first ping to get started!', {
+              icon: '📡',
+            });
+          }
+        } else {
+          toast.error('Failed to load ping data. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error loading pings:', error);
+        toast.error(
+          'Network error. Please check your connection and try again.'
+        );
+      } finally {
+        setLoading(false);
       }
     };
     loadPings();
   }, []);
+
+  if (loading) {
+    return (
+      <div className='flex items-center justify-center min-h-[400px]'>
+        <div className='text-green-400 animate-pulse'>
+          <h2 className='text-xl font-mono'>
+            📡 Loading mission communications...
+          </h2>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 export default function LoginForm() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -14,6 +15,7 @@ export default function LoginForm() {
 
     if (!form.email || !form.password) {
       setError('Please enter both email and password.');
+      toast.error('Please enter both email and password.');
       setLoading(false);
       return;
     }
@@ -34,12 +36,20 @@ export default function LoginForm() {
       const data = await response.json();
 
       if (response.ok) {
-        window.location.href = '/dashboard';
+        toast.success('Access granted! Redirecting to Mission Control...');
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 1500);
       } else {
-        setError(data.message || 'Login failed. Please try again.');
+        const errorMessage = data.message || 'Login failed. Please try again.';
+        setError(errorMessage);
+        toast.error(errorMessage);
       }
     } catch (err) {
-      setError('Network error. Please check your connection and try again.');
+      const errorMessage =
+        'Network error. Please check your connection and try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
       console.error('Login error:', err);
     } finally {
       setLoading(false);

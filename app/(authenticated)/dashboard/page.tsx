@@ -25,6 +25,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import PingCard from '../../../components/PingCard';
 
 interface Ping {
@@ -38,13 +39,34 @@ interface Ping {
 
 export default function DashboardPage() {
   const [pings, setPings] = useState<Ping[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadPings = async () => {
-      const res = await fetch('/api/pings');
-      if (res.ok) {
-        const data = await res.json();
-        setPings(data.pings);
+      try {
+        setLoading(true);
+        const res = await fetch('/api/pings');
+        if (res.ok) {
+          const data = await res.json();
+          setPings(data.pings);
+          if (data.pings.length === 0) {
+            toast(
+              'Welcome to Mission Control! Send your first ping to get started.',
+              {
+                icon: '🕵️',
+              }
+            );
+          }
+        } else {
+          toast.error('Failed to load dashboard data. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
+        toast.error(
+          'Network error. Please check your connection and try again.'
+        );
+      } finally {
+        setLoading(false);
       }
     };
     loadPings();
@@ -56,6 +78,18 @@ export default function DashboardPage() {
       'Test error - this is intentional to demonstrate error boundaries!'
     );
   };
+
+  if (loading) {
+    return (
+      <div className='flex items-center justify-center min-h-[400px]'>
+        <div className='text-green-400 animate-pulse'>
+          <h2 className='text-xl font-mono'>
+            🕵️ Initializing Mission Control...
+          </h2>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>

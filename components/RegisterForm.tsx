@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 export default function RegisterForm() {
   const [form, setForm] = useState({
@@ -19,6 +20,7 @@ export default function RegisterForm() {
 
     if (!form.email || !form.password || !form.agentCode) {
       setError('Please complete all fields to register.');
+      toast.error('Please complete all fields to register.');
       setLoading(false);
       return;
     }
@@ -41,15 +43,23 @@ export default function RegisterForm() {
       const data = await response.json();
 
       if (response.ok) {
-        alert(
+        toast.success(
           'Agent registered successfully! Redirecting to Mission Control...'
         );
-        window.location.href = '/dashboard';
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 2000);
       } else {
-        setError(data.message || 'Registration failed. Please try again.');
+        const errorMessage =
+          data.message || 'Registration failed. Please try again.';
+        setError(errorMessage);
+        toast.error(errorMessage);
       }
     } catch (err) {
-      setError('Network error. Please check your connection and try again.');
+      const errorMessage =
+        'Network error. Please check your connection and try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
       console.error('Registration error:', err);
     } finally {
       setLoading(false);
